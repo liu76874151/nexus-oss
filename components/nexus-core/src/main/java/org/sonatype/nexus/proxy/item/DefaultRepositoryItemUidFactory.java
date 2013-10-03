@@ -16,6 +16,7 @@ package org.sonatype.nexus.proxy.item;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -53,7 +54,7 @@ public class DefaultRepositoryItemUidFactory
   @Inject
   public DefaultRepositoryItemUidFactory(final EventBus eventBus,
                                          final RepositoryRegistry repositoryRegistry,
-                                         final @Named("${sisu-resource-locks:-local}") ResourceLockFactory lockFactory)
+                                         final @Named("${sisu-resource-locks:-local}") @Nullable ResourceLockFactory lockFactory)
   {
     this.eventBus = checkNotNull(eventBus);
     this.repositoryRegistry = checkNotNull(repositoryRegistry);
