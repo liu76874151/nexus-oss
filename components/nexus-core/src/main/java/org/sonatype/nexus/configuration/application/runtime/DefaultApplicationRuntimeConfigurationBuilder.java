@@ -15,7 +15,6 @@ package org.sonatype.nexus.configuration.application.runtime;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.sonatype.configuration.ConfigurationException;
@@ -23,7 +22,6 @@ import org.sonatype.configuration.validation.InvalidConfigurationException;
 import org.sonatype.guice.bean.locators.BeanLocator;
 import org.sonatype.inject.BeanEntry;
 import org.sonatype.nexus.logging.AbstractLoggingComponent;
-import org.sonatype.nexus.proxy.repository.GroupRepository;
 import org.sonatype.nexus.proxy.repository.Repository;
 
 import com.google.inject.Key;
@@ -51,15 +49,19 @@ public class DefaultApplicationRuntimeConfigurationBuilder
   public Repository createRepository(Class<? extends Repository> type, String name) throws ConfigurationException {
     try {
       Iterable<? extends BeanEntry<?, ? extends Repository>> itr = beanLocator.locate(Key.get(type, Names.named(name)));
-      // prefer non-group repositories over group repositories
-      if (!GroupRepository.class.isAssignableFrom(type)) {
-        for (final BeanEntry<?, ? extends Repository> entry : itr) {
-          if (!GroupRepository.class.isAssignableFrom(entry.getImplementationClass())) {
-            return entry.getValue();
+      for (final BeanEntry<?, ? extends Repository> entry : itr) {
+        Class<?> impl = entry.getImplementationClass();
+        if (impl != null) {
+          // sanity check: is the repository type declared as a direct interface on the implementation?
+          // (helps filter out implementations that actually implement a sub-type like GroupRepository) 
+          for (final Class<?> api : impl.getInterfaces()) {
+            if (type.equals(api)) {
+              return entry.getValue();
+            }
           }
         }
       }
-      return itr.iterator().next().getValue();
+      return itr.iterator().next().getValue(); // fall-back to basic search results
     }
     catch (Exception e) {
       throw new InvalidConfigurationException("Could not lookup a new instance of Repository!", e);
