@@ -371,11 +371,6 @@ define('repoServer/RepoServer',['extjs', 'sonatype', 'Sonatype/lib', 'Nexus/conf
                     title : 'Documentation',
                     tabId : 'Documentation',
                     tabCode : Sonatype.repoServer.Documentation
-                  }, {
-                    enabled : sp.checkPermission('nexus:settings', sp.READ),
-                    title : 'Report Problem',
-                    tabId : 'error-report',
-                    handler : Sonatype.utils.generateErrorReportHandler
                   }]
             });
       },
