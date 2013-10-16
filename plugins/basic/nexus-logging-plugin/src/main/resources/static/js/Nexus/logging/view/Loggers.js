@@ -41,6 +41,7 @@ NX.define('Nexus.logging.view.Loggers', {
 
   viewConfig: {
     emptyText: 'No loggers defined.',
+    emptyTextWhileFiltering: 'No loggers matched criteria: {criteria}',
     deferEmptyText: false
   },
 
@@ -56,7 +57,8 @@ NX.define('Nexus.logging.view.Loggers', {
    */
   initComponent: function () {
     var me = this,
-        icons = Nexus.logging.Icons;
+        icons = Nexus.logging.Icons,
+        sp = Sonatype.lib.Permissions;
 
     Ext.apply(me, {
       store: NX.create('Nexus.logging.store.Logger'),
@@ -101,7 +103,8 @@ NX.define('Nexus.logging.view.Loggers', {
           id: 'nx-logging-button-add-logger',
           text: 'Add',
           tooltip: 'Add new logger',
-          iconCls: icons.get('loggers_add').cls
+          iconCls: icons.get('loggers_add').cls,
+          disabled: !sp.checkPermission('nexus:logconfig', sp.EDIT)
         },
         {
           id: 'nx-logging-button-remove-loggers',
@@ -109,6 +112,11 @@ NX.define('Nexus.logging.view.Loggers', {
           tooltip: 'Remove selected logger',
           iconCls: icons.get('loggers_remove').cls,
           disabled: true
+        },
+        '->',
+        {
+          xtype: 'nx-grid-filter-box',
+          filteredGrid: me
         }
       ]
     });

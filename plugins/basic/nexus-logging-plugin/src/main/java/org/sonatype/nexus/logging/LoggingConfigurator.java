@@ -11,28 +11,41 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 
-package org.sonatype.nexus.logging.internal;
+package org.sonatype.nexus.logging;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import java.util.Collection;
 
-import org.sonatype.nexus.logging.LoggingPlugin;
-import org.sonatype.nexus.plugin.support.StaticSecurityResourceSupport;
-import org.sonatype.security.realms.tools.StaticSecurityResource;
+import org.sonatype.nexus.logging.model.LevelXO;
+import org.sonatype.nexus.logging.model.LoggerXO;
 
 /**
- * Logging plugin {@link StaticSecurityResource}.
+ * Dynamic loggers configuration.
  *
  * @since 2.7
  */
-@Named
-@Singleton
-public class LoggingSecurityResource
-    extends StaticSecurityResourceSupport
+public interface LoggingConfigurator
 {
-  @Inject
-  public LoggingSecurityResource(final LoggingPlugin plugin) {
-    super(plugin);
-  }
+
+  /**
+   * Returns the list of current configured loggers (never null).
+   * Collection will contain all loggers contributed by {@link LoggerContributor}s, already configured loggers and one
+   * entry for "ROOT" logger.
+   */
+  Collection<LoggerXO> getLoggers();
+
+  /**
+   * Sets logging level for specified logger
+   *
+   * @param name  of logger to set the level of
+   * @param level to be set
+   */
+  void setLevel(String name, LevelXO level);
+
+  /**
+   * Removes specified logger.
+   *
+   * @param name of logger to be removed
+   */
+  void remove(String name);
+
 }

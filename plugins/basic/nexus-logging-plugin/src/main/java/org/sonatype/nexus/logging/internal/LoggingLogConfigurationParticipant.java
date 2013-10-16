@@ -10,37 +10,44 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-/*global NX, Ext, Nexus, Sonatype*/
+
+package org.sonatype.nexus.logging.internal;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.inject.Named;
+
+import org.sonatype.nexus.log.LogConfigurationParticipant;
+
+import com.google.common.base.Throwables;
+import com.google.inject.Singleton;
 
 /**
- * Logger level combo.
+ * "logback-dynamic.xml" {@link LogConfigurationParticipant}.
  *
  * @since 2.7
  */
-NX.define('Nexus.logging.view.LoggerLevel', {
-  extend: 'Ext.form.ComboBox',
-  xtype: 'nx-logging-combo-logger-level',
+@Named
+@Singleton
+public class LoggingLogConfigurationParticipant
+    implements LogConfigurationParticipant
+{
 
-  triggerAction: 'all',
-  lazyRender: true,
-  mode: 'local',
-  emptyText: 'Select...',
-  editable: false,
-  store: NX.create('Ext.data.ArrayStore', {
-    id: 0,
-    fields: [
-      'level'
-    ],
-    data: [
-      ['TRACE'],
-      ['DEBUG'],
-      ['INFO'],
-      ['WARN'],
-      ['ERROR'],
-      ['OFF']
-    ]
-  }),
-  valueField: 'level',
-  displayField: 'level'
+  public static final String NAME = "logback-dynamic.xml";
 
-});
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  public InputStream getConfiguration() {
+    try {
+      return this.getClass().getResource(getName()).openStream();
+    }
+    catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
+  }
+}

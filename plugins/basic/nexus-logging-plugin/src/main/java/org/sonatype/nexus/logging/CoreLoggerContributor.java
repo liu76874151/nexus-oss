@@ -13,53 +13,30 @@
 
 package org.sonatype.nexus.logging;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import java.util.Set;
 
-import org.sonatype.inject.EagerSingleton;
-import org.sonatype.nexus.plugin.PluginIdentity;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import com.google.common.collect.Sets;
 
 /**
- * Logging plugin.
+ * Nexus Core {@link LoggerContributor}.
  *
  * @since 2.7
  */
 @Named
-@EagerSingleton
-public class LoggingPlugin
-    extends PluginIdentity
+@Singleton
+public class CoreLoggerContributor
+    implements LoggerContributor
 {
 
-  /**
-   * Prefix for ID-like things.
-   */
-  public static final String ID_PREFIX = "logging";
-
-  /**
-   * Expected groupId for plugin artifact.
-   */
-  public static final String GROUP_ID = "org.sonatype.nexus.plugins";
-
-  /**
-   * Expected artifactId for plugin artifact.
-   */
-  public static final String ARTIFACT_ID = "nexus-" + ID_PREFIX + "-plugin";
-
-  /**
-   * Prefix for REST resources
-   */
-  public static final String REST_PREFIX = "/" + ID_PREFIX;
-
-  /**
-   * Prefix for permissions.
-   */
-  public static final String PERMISSION_PREFIX = "nexus:logconfig:";
-
-  @Inject
-  public LoggingPlugin()
-      throws Exception
-  {
-    super(GROUP_ID, ARTIFACT_ID);
+  @Override
+  public Set<String> getLoggers() {
+    return Sets.newHashSet(
+        "org.sonatype.nexus",
+        "org.sonatype.nexus.apachehttpclient"
+    );
   }
 
 }
