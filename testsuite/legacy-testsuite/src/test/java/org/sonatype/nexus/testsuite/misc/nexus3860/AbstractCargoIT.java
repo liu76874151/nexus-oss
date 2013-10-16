@@ -42,7 +42,6 @@ import org.sonatype.nexus.test.utils.XStreamFactory;
 import org.sonatype.nexus.testsuite.plugin.nexus2810.PluginConsoleMessageUtil;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.cargo.container.ContainerType;
 import org.codehaus.cargo.container.InstalledLocalContainer;
@@ -306,15 +305,6 @@ public abstract class AbstractCargoIT
 
       assertThat("Should have been DEBUG level logging so there should have been DEBUG in log",
           downloadedLogStr, containsString("DEBUG"));
-
-      List<String> falsePositives = Lists.newArrayList();
-      falsePositives.add("org/sonatype/nexus/rest/error/reporting/ErrorReportingPlexusResource");
-      falsePositives.add("org.sonatype.nexus.rest.error.reporting.ErrorReportingPlexusResource");
-      falsePositives.add("org.sonatype.nexus.error.reporting.DefaultErrorReportingManager");
-
-      for (String fp : falsePositives) {
-        downloadedLogStr = downloadedLogStr.replace(fp, "");
-      }
 
       assertThat(downloadedLogStr, not(containsString("error")));
       assertThat(downloadedLogStr, not(containsString("exception")));
